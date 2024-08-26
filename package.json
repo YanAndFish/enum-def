@@ -1,12 +1,13 @@
 {
   "name": "@yafh/enum-def",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "module": "index.ts",
   "type": "module",
   "scripts": {
     "build": "tsup",
     "bump": "bumpp",
-    "test": "vitest"
+    "test": "vitest",
+    "prepublish": "bun build"
   },
   "devDependencies": {
     "@types/bun": "latest",
