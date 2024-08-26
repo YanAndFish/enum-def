@@ -1,0 +1,31 @@
+{
+  "name": "@yafh/enum-def",
+   "version": "0.0.1",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsup",
+    "bump": "bumpp"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "bumpp": "^9.5.2",
+    "tsup": "^8.2.4"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
