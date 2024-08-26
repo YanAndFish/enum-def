@@ -1,6 +1,7 @@
 import { defineEnum } from '../impl'
 import {
   type EnumItemValue,
+  type EnumIterate,
   type EnumNames,
   type EnumTitles,
   type EnumValues,
@@ -110,14 +111,6 @@ giveMeAEnumItem(arrow.down.value)
 
 type num = 1
 type enu = EnumItemValue<{}, 1>
-type CheckNum<T extends number> = T extends {
-  __enum_opt: unknown
-}
-  ? 'enum'
-  : 'number'
-
-type test = CheckNum<num>
-type test2 = CheckNum<enu>
 
 type eiv = EnumItemValue<{ a: { title: 'ddd'; value: 1 }; b: { title: 'b'; value: 2 } }, 3>
 type eive = UnWrapEnumValue<eiv>
@@ -125,3 +118,5 @@ type eivs = UnWrapEnumValue<1>
 type eivss = UnWrapEnumValue<number>
 
 type av = (typeof arrow)[EnumValues<typeof arrow>]['value']
+
+type unknownIter = EnumIterate<{}>

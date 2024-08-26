@@ -36,14 +36,15 @@ export type EnumItem<T extends string, N extends string, V extends number, D ext
 }
 
 export type UnknownEnumType<D extends EnumOption> = EnumItem<string, string, number, D>
-type EunmItemsDefine<D extends EnumOption> = {
+type NumEnumIter<D extends EnumOption> = {
   [K in keyof D as D[K] extends EnumItemOption ? K : never]: NumWrapEnumItem<
     D[K]['title'],
     K & string,
     D[K]['value'],
     D
   >
-} & {
+}
+type StrEnumIter<D extends EnumOption> = {
   [K in keyof D as D[K] extends EnumItemOption ? D[K]['value'] : never]: StrWrapEnumItem<
     D[K]['title'],
     K & string,
@@ -51,8 +52,13 @@ type EunmItemsDefine<D extends EnumOption> = {
     D
   >
 }
+export type EunmItemsDefine<D extends EnumOption> = NumEnumIter<D> & StrEnumIter<D>
 
-type EnumIterate<D> = Iterable<unknown>
+export type EnumIterate<D> = [{}] extends [D]
+  ? Iterable<unknown>
+  : D extends EnumOption
+  ? Iterable<NumEnumIter<D>[keyof NumEnumIter<D>]>
+  : Iterable<unknown>
 
 export type UnknownEnumDefine<D extends EnumOption = EnumOption> = {
   readonly [s: string]: (UnknownEnumType<D> & number) | undefined
@@ -60,7 +66,8 @@ export type UnknownEnumDefine<D extends EnumOption = EnumOption> = {
   readonly [n: number]: (UnknownEnumType<D> & string) | undefined
 } & EnumIterate<D>
 
-export type EnumDefine<D extends EnumOption> = EunmItemsDefine<D> & EnumIterate<D>
+export type DefiniteEnumDefine<D extends EnumOption> = EunmItemsDefine<D> & EnumIterate<D>
+export type EnumDefine<D extends EnumOption> = DefiniteEnumDefine<D> & UnknownEnumDefine<D>
 
 type NumWrapEnumItem<T extends string, N extends string, V extends number, D extends EnumOption> = EnumItem<
   T,
@@ -88,7 +95,7 @@ type StrWrapEnumItem<T extends string, N extends string, V extends number, D ext
  * type ArrowNames = EnumNames<typeof arrow> // 'up' | 'down'
  * ```
  */
-export type EnumNames<T extends EnumDefine<{}>> = keyof Definite<T> & string
+export type EnumNames<T extends UnknownEnumDefine> = keyof Definite<T> & string
 /**
  * 获取枚举项值联合类型
  * @example
@@ -97,7 +104,7 @@ export type EnumNames<T extends EnumDefine<{}>> = keyof Definite<T> & string
  * type ArrowValues = EnumValues<typeof arrow> // 1 | 2
  * ```
  */
-export type EnumValues<T extends EnumDefine<{}>> = {
+export type EnumValues<T extends UnknownEnumDefine> = {
   [K in EnumNames<T>]: T[K] extends EnumItem<string, string, infer V, {}> ? V : never
 }[EnumNames<T>]
 /**
@@ -108,7 +115,7 @@ export type EnumValues<T extends EnumDefine<{}>> = {
  * type ArrowTitles = EnumTitles<typeof arrow> // '上' | '下'
  * ```
  */
-export type EnumTitles<T extends EnumDefine<{}>> = {
+export type EnumTitles<T extends UnknownEnumDefine> = {
   [K in EnumNames<T>]: T[K] extends EnumItem<infer T, string, number, {}> ? T : never
 }[EnumNames<T>]
 /**
