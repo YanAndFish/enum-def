@@ -16,7 +16,7 @@ export type EnumItemOption = {
 export type EnumOption = Record<string, EnumItemOption>
 
 // 类型的值都不存在于运行时
-type ValueMeta<S extends string, V> = Record<`__enum_${S}`, V>
+type ValueMeta<S extends string, V> = Partial<Record<`__enum_${S}`, V>>
 
 export type EnumItemValue<D extends EnumOption, V extends number> = ValueMeta<'opt', D> & ValueMeta<'value', V> & V
 
@@ -75,7 +75,7 @@ type NumWrapEnumItem<T extends string, N extends string, V extends number, D ext
   V,
   D
 > &
-  V
+  Number
 
 type StrWrapEnumItem<T extends string, N extends string, V extends number, D extends EnumOption> = EnumItem<
   T,
@@ -83,7 +83,7 @@ type StrWrapEnumItem<T extends string, N extends string, V extends number, D ext
   V,
   D
 > &
-  N
+  String
 
 // utils
 

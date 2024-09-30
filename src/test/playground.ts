@@ -68,6 +68,9 @@ audit.hhhh
 audit.Failing.name
 audit[4].value === 4
 
+// err
+audit.Passed === 3
+
 const n: number = 10
 audit[n]?.name
 
@@ -89,8 +92,11 @@ naive(audit)
 declare function enumItem(item: RequestEnumItem<typeof arrow>): void
 
 enumItem(arrow.down)
+// err
 enumItem(audit.Failing)
+// err
 enumItem(audit[1])
+// err
 enumItem(audit[n]!)
 enumItem(arrow[n]!)
 enumItem(arrow.dddddd!)
@@ -100,11 +106,17 @@ declare function enumValue(item: RequestEnumValue<typeof arrow>): void
 
 enumValue(1)
 enumValue(n)
+// err
+enumValue(arrow.down)
 enumValue(arrow.down.value)
+// err
 enumValue(audit.Failing.value)
+// err
 enumValue(audit[n]!.value)
 enumValue(arrow[n]!.value)
 enumValue(arrow.foo!.value)
+
+  ;[arrow.down.value, arrow.up.value].includes(1)
 
 declare function giveMeAEnumItem(item: number): void
 giveMeAEnumItem(arrow.down.value)
