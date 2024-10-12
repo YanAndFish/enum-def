@@ -132,3 +132,5 @@ type eivss = UnWrapEnumValue<number>
 type av = (typeof arrow)[EnumValues<typeof arrow>]['value']
 
 type unknownIter = EnumIterate<{}>
+
+arrow.in(1, 'down', 'up')

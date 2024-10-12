@@ -67,7 +67,12 @@ export type UnknownEnumDefine<D extends EnumOption = EnumOption> = {
 } & EnumIterate<D>
 
 export type DefiniteEnumDefine<D extends EnumOption> = EunmItemsDefine<D> & EnumIterate<D>
-export type EnumDefine<D extends EnumOption> = DefiniteEnumDefine<D> & UnknownEnumDefine<D>
+
+type EnumMethods<D extends EnumOption> = {
+  in(value: number | string, ...items: (keyof D)[]): boolean
+}
+
+export type EnumDefine<D extends EnumOption> = DefiniteEnumDefine<D> & UnknownEnumDefine<D> & EnumMethods<D>
 
 type NumWrapEnumItem<T extends string, N extends string, V extends number, D extends EnumOption> = EnumItem<
   T,

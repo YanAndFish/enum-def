@@ -33,5 +33,13 @@ export function defineEnum<const T extends EnumOption>(option: T): EnumDefine<T>
     }
   }
 
+  res.in = (value: number | string, ...items: (keyof T)[]) => {
+    if (typeof value === 'number') {
+      return items.some((item) => res[item].value === value)
+    } else {
+      return items.some((item) => res[item].name === value)
+    }
+  }
+
   return res
 }
