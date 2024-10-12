@@ -41,5 +41,17 @@ export function defineEnum<const T extends EnumOption>(option: T): EnumDefine<T>
     }
   }
 
+  Object.defineProperty(res, 'in', {
+    enumerable: false,
+    value: (value: number | string, ...items: (keyof T)[]) => {
+      if (typeof value === 'number') {
+        return items.some((item) => res[item].value === value)
+      } else {
+        return items.some((item) => res[item].name === value)
+      }
+    },
+    writable: false
+  })
+
   return res
 }
