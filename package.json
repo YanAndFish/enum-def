@@ -1,7 +1,6 @@
 {
   "name": "@yafh/enum-def",
   "version": "0.2.4",
-  "module": "index.ts",
   "type": "module",
   "scripts": {
     "build": "tsup",
