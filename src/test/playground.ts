@@ -7,6 +7,7 @@ import {
   type EnumValues,
   type RequestEnumItem,
   type RequestEnumValue,
+  type RequestStrictEnumValue,
   type UnknownEnumDefine,
   type UnWrapEnumValue,
 } from '../types'
@@ -120,6 +121,27 @@ enumValue(arrow.foo!.value)
 
 declare function giveMeAEnumItem(item: number): void
 giveMeAEnumItem(arrow.down.value)
+
+declare const evs: RequestStrictEnumValue<typeof arrow>
+declare function striceEnumValue(item: RequestStrictEnumValue<typeof arrow>): void
+
+// err
+striceEnumValue(1)
+// err
+striceEnumValue(n)
+// err
+striceEnumValue(arrow.down)
+striceEnumValue(arrow.down.value)
+// err
+striceEnumValue(audit.Failing.value)
+// err
+striceEnumValue(audit[n]!.value)
+// err
+striceEnumValue(arrow[n]!.value)
+striceEnumValue(arrow[1].value)
+striceEnumValue(arrow['left'].value)
+// err
+striceEnumValue(arrow.foo!.value)
 
 type num = 1
 type enu = EnumItemValue<{}, 1>

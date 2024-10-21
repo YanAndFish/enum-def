@@ -2,6 +2,12 @@ type Definite<T> = {
   [K in keyof T as K extends `${infer _}` ? K : never]: T[K]
 }
 
+const enumOptSymbol: unique symbol = Symbol('enum_opt')
+const enumValueSymbol: unique symbol = Symbol('enum_value')
+
+type EnumOptSymbol = typeof enumOptSymbol
+type EnumValueSymbol = typeof enumValueSymbol
+
 export type EnumItemOption = {
   /**
    * 枚举标题
@@ -16,9 +22,9 @@ export type EnumItemOption = {
 export type EnumOption = Record<string, EnumItemOption>
 
 // 类型的值都不存在于运行时
-type ValueMeta<S extends string, V> = Partial<Record<`__enum_${S}`, V>>
+type ValueMeta<S extends EnumOptSymbol | EnumValueSymbol, V> = Partial<Record<S, V>>
 
-export type EnumItemValue<D extends EnumOption, V extends number> = ValueMeta<'opt', D> & ValueMeta<'value', V> & V
+export type EnumItemValue<D extends EnumOption, V extends number> = ValueMeta<EnumOptSymbol, D> & ValueMeta<EnumValueSymbol, V> & V
 
 export type EnumItem<T extends string, N extends string, V extends number, D extends EnumOption> = {
   /**
@@ -165,7 +171,32 @@ export type RequestEnumItem<T> = T extends UnknownEnumDefine<infer D>
  * handleMove(9999) // 非法的枚举值，但是不会报错
  * ```
  */
-export type RequestEnumValue<T> = T extends UnknownEnumDefine<infer D> ? Partial<ValueMeta<'opt', D>> & number : never
+export type RequestEnumValue<T> = T extends UnknownEnumDefine<infer D> ? Partial<ValueMeta<EnumOptSymbol, D>> & number : never
+
+/**
+ * 请求严格枚举值类型，通常用于函数形参的定义
+ * 可以通过的类型有：
+ * - 枚举值 `arrow.up.value`
+ * - 未知的枚举值 `arrow[n]!` 或 `arrow.foo!.value`
+ * - 数字
+ * @example
+ * ```ts
+ * const arrow = defineEnum({ up: { title: '上', value: 1 }, down: { title: '下', value:2 } })
+ *
+ * function handleMove(arrow: RequestEnumValue<typeof arrow>) {
+ *  //...
+ * }
+ *
+ * handleMove(arrow.up.value) // ok
+ * handleMove(1) // error
+ * handleMove(arrow[n]!) // error
+ * handleMove(arrow.foo!.value) // error
+ * handleMove(animals.brid.value) // error
+ * handleMove(9999) // error
+ * ```
+ */
+export type RequestStrictEnumValue<T> = T extends UnknownEnumDefine<infer D> ? EnumItemValue<D, EnumValues<T>> : never
+
 /**
  * 解构枚举类型
  * @example
@@ -176,4 +207,4 @@ export type RequestEnumValue<T> = T extends UnknownEnumDefine<infer D> ? Partial
  * type UpValue = UnWrapEnumValue<typeof up> // 1
  * ```
  */
-export type UnWrapEnumValue<T> = T extends ValueMeta<'value', infer V> ? V : T extends number ? T : never
+export type UnWrapEnumValue<T> = T extends ValueMeta<EnumValueSymbol, infer V> ? V : T extends number ? T : never
