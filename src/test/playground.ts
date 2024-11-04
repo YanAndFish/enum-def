@@ -10,6 +10,7 @@ import {
   type RequestStrictEnumValue,
   type UnknownEnumDefine,
   type UnWrapEnumValue,
+  type UnWrapEnumValues,
 } from '../types'
 
 const audit = defineEnum({
@@ -155,4 +156,16 @@ type av = (typeof arrow)[EnumValues<typeof arrow>]['value']
 
 type unknownIter = EnumIterate<{}>
 
-arrow.in(1, 'down', 'up')
+arrow.$in(1, 'down', 'up')
+const v = arrow.$omit('down', 'up')
+const h = arrow.$pick('down', 'up')
+
+v.left.value
+h.up.value
+
+declare function handleMove<T extends RequestStrictEnumValue<typeof arrow>[]>(...val: T): UnWrapEnumValues<typeof arrow>
+
+const strictRes = handleMove(arrow.left.value, arrow.down.value)
+// err
+handleMove(v.left.value)
+

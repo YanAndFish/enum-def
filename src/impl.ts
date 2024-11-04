@@ -33,15 +33,7 @@ export function defineEnum<const T extends EnumOption>(option: T): EnumDefine<T>
     }
   }
 
-  res.in = (value: number | string, ...items: (keyof T)[]) => {
-    if (typeof value === 'number') {
-      return items.some((item) => res[item].value === value)
-    } else {
-      return items.some((item) => res[item].name === value)
-    }
-  }
-
-  Object.defineProperty(res, 'in', {
+  Object.defineProperty(res, '$in', {
     enumerable: false,
     value: (value: number | string, ...items: (keyof T)[]) => {
       if (typeof value === 'number') {
@@ -49,6 +41,22 @@ export function defineEnum<const T extends EnumOption>(option: T): EnumDefine<T>
       } else {
         return items.some((item) => res[item].name === value)
       }
+    },
+    writable: false
+  })
+
+  Object.defineProperty(res, '$pick', {
+    enumerable: false,
+    value: (...items: (keyof T)[]) => {
+      return defineEnum(Object.fromEntries(items.map((item) => [item, res[item]])))
+    },
+    writable: false
+  })
+
+  Object.defineProperty(res, '$omit', {
+    enumerable: false,
+    value: (...items: (keyof T)[]) => {
+      return defineEnum(Object.fromEntries(Object.keys(res).filter((key) => !items.includes(key as keyof T)).map((key) => [key, res[key]])))
     },
     writable: false
   })

@@ -75,7 +75,22 @@ export type UnknownEnumDefine<D extends EnumOption = EnumOption> = {
 export type DefiniteEnumDefine<D extends EnumOption> = EunmItemsDefine<D> & EnumIterate<D>
 
 type EnumMethods<D extends EnumOption> = {
-  in(value: number | string, ...items: (keyof D)[]): boolean
+  /**
+   * 判断一个值是否在指定的一个或多个枚举项中
+   * @param value 值，可以是枚举值或枚举名称
+   * @param items 枚举项名称
+   */
+  $in(value: number | string, ...items: (keyof D)[]): boolean
+  /**
+   * 排除指定的枚举项，返回一个新的枚举
+   * @param items 枚举项名称
+   */
+  $omit<T extends (keyof D)[]>(...items: T): EnumDefine<Omit<D, T[number]>>
+  /**
+   * 选择指定的枚举项，返回一个新的枚举
+   * @param items 枚举项名称
+   */
+  $pick<T extends (keyof D)[]>(...items: T): EnumDefine<Pick<D, T[number]>>
 }
 
 export type EnumDefine<D extends EnumOption> = DefiniteEnumDefine<D> & UnknownEnumDefine<D> & EnumMethods<D>
@@ -107,6 +122,7 @@ type StrWrapEnumItem<T extends string, N extends string, V extends number, D ext
  * ```
  */
 export type EnumNames<T extends UnknownEnumDefine> = keyof Definite<T> & string
+
 /**
  * 获取枚举项值联合类型
  * @example
@@ -118,6 +134,7 @@ export type EnumNames<T extends UnknownEnumDefine> = keyof Definite<T> & string
 export type EnumValues<T extends UnknownEnumDefine> = {
   [K in EnumNames<T>]: T[K] extends EnumItem<string, string, infer V, {}> ? V : never
 }[EnumNames<T>]
+
 /**
  * 获取枚举项标题联合类型
  * @example
@@ -208,3 +225,13 @@ export type RequestStrictEnumValue<T> = T extends UnknownEnumDefine<infer D> ? E
  * ```
  */
 export type UnWrapEnumValue<T> = T extends ValueMeta<EnumValueSymbol, infer V> ? V : T extends number ? T : never
+
+/**
+ * 获取枚举项值解构联合类型
+ * @example
+ * ```ts
+ * const arrow = defineEnum({ up: { title: '上', value: 1 }, down: { title: '下', value:2 } })
+ * type ArrowValues = EnumValues<typeof arrow> // 1 | 2
+ * ```
+ */
+export type UnWrapEnumValues<T extends UnknownEnumDefine> = T extends UnknownEnumDefine<infer D> ? D[keyof D]['value'] : never
