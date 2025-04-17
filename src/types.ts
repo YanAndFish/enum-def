@@ -78,7 +78,7 @@ type EnumMethods<D extends EnumOption> = {
   /**
    * 判断一个值是否在指定的一个或多个枚举项中
    * @param value 值，可以是枚举值或枚举名称
-   * @param items 枚举项名称
+   * @param items 枚举项名称，如果不传则默认所有枚举项
    */
   $in(value: number | string, ...items: (keyof D)[]): boolean
   /**
@@ -121,7 +121,7 @@ type StrWrapEnumItem<T extends string, N extends string, V extends number, D ext
  * type ArrowNames = EnumNames<typeof arrow> // 'up' | 'down'
  * ```
  */
-export type EnumNames<T extends UnknownEnumDefine> = keyof Definite<T> & string
+export type EnumNames<T extends UnknownEnumDefine> = Exclude<keyof Definite<T>, keyof EnumMethods<any>> & string
 
 /**
  * 获取枚举项值联合类型

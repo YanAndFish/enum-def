@@ -1,5 +1,6 @@
 import { defineEnum } from '../impl'
-import { expect, test } from 'vitest'
+import { expect, expectTypeOf, test } from 'vitest'
+import type { EnumNames } from '../types'
 
 test('enum', () => {
   const arrow = defineEnum({
@@ -32,4 +33,8 @@ test('enum', () => {
 
   expect(arrow.up == 1).true
   expect(arrow[1] == 'up').true
+
+  expectTypeOf<EnumNames<typeof arrow>>().toEqualTypeOf<'up' | 'down' | 'left' | 'right'>()
+
+  expect(arrow.$in(1)).true
 })
