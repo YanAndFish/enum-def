@@ -235,3 +235,26 @@ export type UnWrapEnumValue<T> = T extends ValueMeta<EnumValueSymbol, infer V> ?
  * ```
  */
 export type UnWrapEnumValues<T extends UnknownEnumDefine> = T extends UnknownEnumDefine<infer D> ? D[keyof D]['value'] : never
+
+/**
+ * 请求严格枚举项类型，通常用于函数形参的定义
+ * 可以通过的类型有：
+ * - 枚举项 `arrow.up`
+ * - 已知枚举值对应的枚举项 `arrow[1]`
+ * @example
+ * ```ts
+ * const arrow = defineEnum({ up: { title: '上', value: 1 }, down: { title: '下', value: 2 } })
+ *
+ * function handleMove(item: RequestStrictEnumItem<typeof arrow>) {
+ *   // ...
+ * }
+ *
+ * handleMove(arrow.up)   // ok
+ * handleMove(arrow[1])   // ok
+ * handleMove(arrow[n]!)  // error
+ * handleMove(arrow.foo!) // error
+ * ```
+ */
+export type RequestStrictEnumItem<T> = T extends UnknownEnumDefine<infer D>
+  ? EunmItemsDefine<D>[keyof EunmItemsDefine<D>]
+  : never;

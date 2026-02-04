@@ -7,6 +7,7 @@ import {
   type EnumValues,
   type RequestEnumItem,
   type RequestEnumValue,
+  type RequestStrictEnumItem,
   type RequestStrictEnumValue,
   type UnknownEnumDefine,
   type UnWrapEnumValue,
@@ -168,4 +169,66 @@ declare function handleMove<T extends RequestStrictEnumValue<typeof arrow>[]>(..
 const strictRes = handleMove(arrow.left.value, arrow.down.value)
 // err
 handleMove(v.left.value)
+
+// ========== RequestStrictEnumItem 测试用例 ==========
+
+// 声明一个接收严格枚举项的函数
+declare function handleStrictMove(item: RequestStrictEnumItem<typeof arrow>): void
+
+// ok: 直接传入枚举项
+handleStrictMove(arrow.up)
+handleStrictMove(arrow.down)
+handleStrictMove(arrow.left)
+handleStrictMove(arrow.right)
+
+// ok: 通过已知枚举值访问
+handleStrictMove(arrow[1])
+handleStrictMove(arrow[2])
+handleStrictMove(arrow[3])
+handleStrictMove(arrow[4])
+handleStrictMove(arrow['up'])
+handleStrictMove(arrow['down'])
+
+// err: 不能传入其他枚举的项
+handleStrictMove(audit.Failing)
+// err: 不能传入未知的枚举项
+handleStrictMove(arrow[n]!)
+// err: 不能传入未知的属性访问
+handleStrictMove(arrow.foo!)
+
+// 类型赋值测试
+declare const strictItem1: RequestStrictEnumItem<typeof arrow>
+declare const strictItem2: RequestStrictEnumItem<typeof arrow>
+
+// ok: 可以赋值为已知枚举项
+const si1: RequestStrictEnumItem<typeof arrow> = arrow.up
+const si2: RequestStrictEnumItem<typeof arrow> = arrow[1]
+const si3: RequestStrictEnumItem<typeof arrow> = arrow['left']
+
+// 泛型函数测试
+declare function processItems<T extends RequestStrictEnumItem<typeof arrow>[]>(...items: T): void
+
+// ok: 传入多个严格枚举项
+processItems(arrow.up, arrow.down)
+processItems(arrow[1], arrow[2], arrow[3])
+processItems(arrow.left, arrow['right'])
+
+// err: 不能混入其他枚举
+processItems(arrow.up, audit.Failing)
+// err: 不能传入未知枚举项
+processItems(arrow.up, arrow[n]!)
+
+// 与 RequestEnumItem 对比测试（展示区别）
+declare function looseMove(item: RequestEnumItem<typeof arrow>): void
+
+// ok: RequestEnumItem 可以接受未知枚举项
+looseMove(arrow.up)
+looseMove(arrow[n]!)
+looseMove(arrow.foo!)
+
+// 但 RequestStrictEnumItem 不可以
+// err
+handleStrictMove(arrow[n]!)
+// err
+handleStrictMove(arrow.foo!)
 
